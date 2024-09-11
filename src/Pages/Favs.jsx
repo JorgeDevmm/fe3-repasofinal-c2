@@ -3,10 +3,10 @@ import { useCharStates } from "../Context";
 import Card from "../Components/Card";
 
 const Favs = () => {
-  const { favs } = useCharStates();
+  const { state } = useCharStates();
   return (
     <div>
-      {favs.map((char) => (
+      {state.favs.map((char) => (
         <Card key={char.id} char={char} />
       ))}
     </div>

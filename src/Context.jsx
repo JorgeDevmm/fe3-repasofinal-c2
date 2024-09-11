@@ -1,29 +1,38 @@
 import axios from "axios";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
+import { reducer } from "./reducers/reducer";
 
 const CharStates = createContext();
 
 const lsFavs = JSON.parse(localStorage.getItem("favs")) || [];
 
-const Context = ({ children }) => {
-  const [theme, setTheme] = useState();
-  const [favs, setFavs] = useState(lsFavs);
-  const [chars, setChars] = useState([]);
-  const url = "https://rickandmortyapi.com/api/character";
+const initialState = {
+  chars: [],
+  favs: lsFavs,
+  theme: true,
+};
 
+const Context = ({ children }) => {
+  // const [theme, setTheme] = useState();
+  // const [favs, setFavs] = useState(lsFavs);
+  // const [chars, setChars] = useState([]);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const url = "https://rickandmortyapi.com/api/character";
+  console.log(state);
   useEffect(() => {
     axios(url).then((res) => {
       console.log(res.data);
-      setChars(res.data.results);
+      // setChars(res.data.results);
+      dispatch({ type: "GET_CHARS", payload: res.data.results });
     });
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("favs", JSON.stringify(favs));
-  }, [favs]);
+    localStorage.setItem("favs", JSON.stringify(state.favs));
+  }, [state.favs]);
 
   return (
-    <CharStates.Provider value={{ theme, setTheme, favs, setFavs, chars }}>
+    <CharStates.Provider value={{ state, dispatch }}>
       {children}
     </CharStates.Provider>
   );
